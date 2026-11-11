@@ -1,5 +1,7 @@
 // @ts-check
+import 'dotenv/config';
 import { defineConfig, devices } from '@playwright/test';
+
 
 /**
  * Read environment variables from file.
@@ -47,19 +49,45 @@ export default defineConfig({
   /* Configure projects for major browsers */
   projects: [
     {
-      name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      name: 'setup',
+      testMatch: '**/setup/*.setup.js',
+      use: { ...devices['Desktop Chrome'] }
     },
-
     {
-      name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
+      name: 'public-chromium',
+      testMatch: '**/public/*.spec.js',
+      use: {
+        ...devices['Desktop Chrome'],
+        storageState: { cookies: [], origins: [] }
+      }
     },
-
     {
-      name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
+      name: 'authenticated-chromium',
+      testMatch: '**/authenticated/*.spec.js',
+      use: {
+        ...devices['Desktop Chrome'],
+        storageState: 'playwright/.auth/standard-user.json'
+      },
+      dependencies: ['setup']
     },
+    {
+      name: 'authenticated-firefox',
+      testMatch: '**/authenticated/*.spec.js',
+      use: {
+        ...devices['Desktop Firefox'],
+        storageState: 'playwright/.auth/standard-user.json'
+      },
+      dependencies: ['setup']
+    },
+    {
+      name: 'authenticated-webkit',
+      testMatch: '**/authenticated/*.spec.js',
+      use: {
+        ...devices['Desktop Safari'],
+        storageState: 'playwright/.auth/standard-user.json'
+      },
+      dependencies: ['setup']
+    }
 
     /* Test against mobile viewports. */
     // {
