@@ -1,10 +1,12 @@
 import { test as setup, expect } from "@playwright/test"
+import { LoginPage } from "../../pages/LoginPage.js"
 
 setup('authenticate as a standard user', async ({page}) => {
-    await page.goto('/');
-    await page.locator('#user-name').fill(process.env.USERNAME);
-    await page.locator('#password').fill(process.env.PASSWORD);
-    await page.locator('#login-button').click();
+    const loginPage = new LoginPage(page);
+
+    await loginPage.goto();
+    await loginPage.login(process.env.USERNAME, process.env.PASSWORD);
+
     await expect(page).toHaveURL('/inventory.html');
     await expect(
         page.getByText('Products', { exact: true })

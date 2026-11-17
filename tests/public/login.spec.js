@@ -1,26 +1,26 @@
 import {test, expect} from "@playwright/test"
+import {LoginPage} from "../../pages/LoginPage.js"
 
-test('testing the login form with valid credentials', async({page}) => {
-    await page.goto('/');
-    await page.locator('#user-name').fill(process.env.USERNAME);
-    await page.locator('#password').fill(process.env.PASSWORD);
-    await page.locator('#login-button').click();
+let loginPage;
+
+test.beforeEach(async({page}) => {
+    loginPage = new LoginPage(page);
+    await loginPage.goto();
+});
+test('login with valid credentials', async({page}) => {
+    await loginPage.login(process.env.USERNAME, process.env.PASSWORD);
     await expect(page).toHaveURL('/inventory.html');
 });
 
-test('testing the login form with invalid credentials', async({page}) => {
-    await page.goto('/');
-    await page.locator('#user-name').fill('invalid_user');
-    await page.locator('#password').fill('invalid_password');
-    await page.locator('#login-button').click();
+test('login with invalid credentials', async({page}) => {
+    await loginPage.login('invalid_user', 'invalid_password');
     await expect(
         page.locator('[data-test="error"]')
     ).toContainText('Username and password do not match any user in this service');
 });
 
-test('testing the login form with empty credentials', async({page}) => {
-    await page.goto('/');
-    await page.locator('#login-button').click();
+test('login with empty credentials', async({page}) => {
+    await loginPage.login('', '');
     await expect(
         page.locator('[data-test="error"]')
     ).toContainText('Username is required');
