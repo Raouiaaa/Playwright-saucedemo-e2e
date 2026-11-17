@@ -1,7 +1,12 @@
 import {test, expect} from "@playwright/test";
+import { InventoryPage } from "../../pages/InventoryPage.js";
 
 test('adding an item to the cart', async({page}) => {
-    await page.goto('/inventory.html');
-    await page.locator('#add-to-cart-sauce-labs-backpack').click();
-    await expect(page.locator('.shopping_cart_badge')).toHaveText('1');
+    const inventoryPage = new InventoryPage(page);
+    await inventoryPage.goto();
+
+    await inventoryPage.addItemToCart('sauce-labs-backpack');
+    await inventoryPage.addItemToCart('sauce-labs-bike-light');
+    
+    await expect(inventoryPage.cartBadge).toHaveText('2');
 });
