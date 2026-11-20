@@ -1,8 +1,6 @@
-import {test, expect} from "@playwright/test";
-import { InventoryPage } from "../../pages/InventoryPage.js";
+import { test, expect } from '../../fixtures/test-fixtures.js';
 
-test('adding an item to the cart', async({page}) => {
-    const inventoryPage = new InventoryPage(page);
+test('adding an item to the cart', async({inventoryPage}) => {
     await inventoryPage.goto();
 
     await inventoryPage.addItemToCart('sauce-labs-backpack');
