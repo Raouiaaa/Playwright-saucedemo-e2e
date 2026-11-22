@@ -1,27 +1,24 @@
-import {test, expect} from "@playwright/test"
-import {LoginPage} from "../../pages/LoginPage.js"
+import { test , expect } from '../../fixtures/test-fixtures.js';
 
-let loginPage;
-
-test.beforeEach(async({page}) => {
-    loginPage = new LoginPage(page);
+test.beforeEach(async({loginPage}) => {
     await loginPage.goto();
 });
-test('login with valid credentials', async({page}) => {
+
+test('login with valid credentials', async({page, loginPage}) => {
     await loginPage.login(process.env.USERNAME, process.env.PASSWORD);
     await expect(page).toHaveURL('/inventory.html');
 });
 
-test('login with invalid credentials', async({page}) => {
+test('login with invalid credentials', async({page, loginPage}) => {
     await loginPage.login('invalid_user', 'invalid_password');
-    await expect(
-        page.locator('[data-test="error"]')
-    ).toContainText('Username and password do not match any user in this service');
+    await expect(loginPage.errorMessage).toContainText(
+        'Username and password do not match any user in this service'
+    );
 });
 
-test('login with empty credentials', async({page}) => {
+test('login with empty credentials', async({page, loginPage}) => {
     await loginPage.login('', '');
-    await expect(
-        page.locator('[data-test="error"]')
-    ).toContainText('Username is required');
+    await expect(loginPage.errorMessage).toContainText(
+        'Username is required'
+    );     
 });
